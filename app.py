@@ -4,7 +4,6 @@ import tempfile
 import time
 import subprocess
 import platform
-import atexit
 from pathlib import Path
 from datetime import datetime
 from pdf2docx import Converter as PDFToDocx
@@ -34,8 +33,8 @@ class DocumentConverter:
         if file_extension not in valid_formats:
             return False, "Unsupported file format"
 
-        if uploaded_file.size > 90 * 1024 * 1024:  # 90MB limit
-            return False, "File size too large (max 90MB)"
+        if uploaded_file.size > 200 * 1024 * 1024:  # 200MB limit
+            return False, "File size too large (max 200MB)"
 
         return True, "File is valid"
 
@@ -99,7 +98,7 @@ class DocumentConverter:
 def preview_file(uploaded_file):
     file_extension = Path(uploaded_file.name).suffix.lower()
     if file_extension in ['.jpg', '.jpeg', '.png']:
-        st.image(uploaded_file, caption="Image Preview", use_container_width=True)
+        st.image(uploaded_file, caption="Image Preview", use_column_width=True)
     elif file_extension == '.pdf':
         temp_pdf_path = os.path.join(tempfile.gettempdir(), uploaded_file.name)
         with open(temp_pdf_path, "wb") as f:
@@ -122,17 +121,9 @@ def preview_file(uploaded_file):
         st.text(text[:500] + "..." if len(text) > 500 else text)
 
 def main():
-    # Start LibreOffice listener for unoconv
-    lo_process = subprocess.Popen(
-        ["soffice", "--headless", "--accept=socket,host=localhost,port=2002;urp;", "--nofirststartwizard"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.STDOUT
-    )
-    atexit.register(lo_process.terminate)
-
     st.set_page_config(page_title="ZePdf", page_icon="📄", layout="wide")
 
-    # Custom CSS
+    # Inject custom CSS for a vibrant green theme that adapts to dark/light mode.
     st.markdown(
         """
         <style>
@@ -171,7 +162,7 @@ def main():
 
     converter = DocumentConverter()
     st.title("📄 ZePdf")
-    st.write("Convert your documents to various formats (max 90MB file size)")
+    st.write("Convert your documents to various formats with a vibrant green touch.")
 
     uploaded_file = st.file_uploader("Choose a file", type=[
         "pdf", "docx", "doc", "pptx", "ppt", "xlsx", "xls", "rtf", 
@@ -179,9 +170,10 @@ def main():
     ])
 
     if uploaded_file:
+        # Display file details for extra clarity.
         st.markdown("### Uploaded File Details")
         st.write(f"**Name:** {uploaded_file.name}")
-        st.write(f"**Size:** {round(uploaded_file.size / 1024 / 1024, 2)} MB")
+        st.write(f"**Size:** {round(uploaded_file.size / 1024, 2)} KB")
         st.write(f"**Type:** {Path(uploaded_file.name).suffix.lower()}")
 
         is_valid, message = converter.validate_file(uploaded_file)
