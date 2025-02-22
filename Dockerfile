@@ -19,7 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Ensure unoconv works by setting the correct symlink
-RUN ln -sf /usr/bin/libreoffice /usr/bin/soffice
+RUN  /usr/bin/libreoffice /usr/bin/soffice
 
 # Set the working directory inside the container
 WORKDIR /app
