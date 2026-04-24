@@ -1,6 +1,6 @@
 # ZePdf
 
-Universal document converter built with vanilla JavaScript and the CloudConvert API.
+Universal document converter. Convert between 20+ formats and split or merge PDFs — fast, clean, and browser-based.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -8,7 +8,7 @@ Universal document converter built with vanilla JavaScript and the CloudConvert 
 
 ## Overview
 
-ZePdf is a client-side web application that converts documents between 20+ formats and provides PDF split and merge tools — all without a backend server. Conversions are handled by the CloudConvert API. PDF split and merge run entirely in the browser using pdf-lib, requiring no API key.
+ZePdf is a client-side web application deployed on Netlify. Document conversions are handled server-side by CloudConvert. PDF split and merge run entirely in the browser using pdf-lib with no external API needed.
 
 ---
 
@@ -35,32 +35,31 @@ ZePdf is a client-side web application that converts documents between 20+ forma
 - Dark and light theme toggle
 - Conversion history panel stored in localStorage, up to 50 entries
 - Daily conversion counter
-- Toast notifications for all events
-- Responsive layout for mobile and desktop
+- Toast notifications
+- Responsive layout
 
 ---
 
-## Getting Started
+## Deployment
 
-### 1. Get a CloudConvert API key
+### Deploy to Netlify from GitHub
 
-Create a free account at [cloudconvert.com](https://cloudconvert.com/api/v2).  
-The free tier provides 25 conversion minutes per day, which covers approximately 300 small file conversions.
+1. Fork or clone this repository.
+2. Go to [app.netlify.com](https://app.netlify.com), create a new site from GitHub, and select this repository.
+3. In your Netlify site settings, go to **Environment variables** and add:
 
-### 2. Deploy to Netlify
+   ```
+   CLOUDCONVERT_API_KEY = your_cloudconvert_api_key
+   ```
 
-Drag the project folder to [app.netlify.com/drop](https://app.netlify.com/drop).  
-No build step is required. The site is live immediately.
+4. Trigger a deploy. Netlify will inject the API key at build time via the build command in `netlify.toml`.
 
-### 3. Run locally
+The CloudConvert API key is never exposed in the repository or in the browser. It is written into a generated `_config.js` file during the Netlify build and served as a static asset.
 
-Open `index.html` in any modern browser. No installation or build step needed.
+### Get a CloudConvert API key
 
----
-
-## API Key Security
-
-The CloudConvert API key is stored only in the browser's localStorage. It is never sent to any server other than CloudConvert directly and is not stored in the repository.
+Create a free account at [cloudconvert.com](https://cloudconvert.com/api/v2).
+The free tier provides 25 conversion minutes per day.
 
 ---
 
@@ -68,11 +67,13 @@ The CloudConvert API key is stored only in the browser's localStorage. It is nev
 
 ```
 Ze-Pdf/
-├── index.html       Main application structure
-├── style.css        Design system, dark and light themes, all components
-├── app.js           Conversion logic using the CloudConvert API
-├── pdf-tools.js     PDF split and merge using pdf-lib, fully client-side
-├── netlify.toml     Netlify deployment config and security headers
+├── index.html       Main application
+├── style.css        Design system and themes
+├── app.js           Conversion logic (CloudConvert)
+├── pdf-tools.js     PDF split and merge (pdf-lib, client-side)
+├── _config.js       Generated at build by Netlify (do not edit)
+├── netlify.toml     Build command and security headers
+├── favicon/         App icons and web manifest
 └── README.md
 ```
 
@@ -80,10 +81,10 @@ Ze-Pdf/
 
 ## Tech Stack
 
-- HTML, CSS, JavaScript — no framework, no build step required
-- [CloudConvert API v2](https://cloudconvert.com/api/v2) — document conversion engine
+- HTML, CSS, JavaScript — no framework, no build step
+- [CloudConvert API v2](https://cloudconvert.com/api/v2) — document conversion
 - [pdf-lib](https://pdf-lib.js.org/) — client-side PDF manipulation
-- [Netlify](https://netlify.com) — hosting and deployment
+- [Netlify](https://netlify.com) — hosting, build, environment variables
 
 ---
 
@@ -93,4 +94,4 @@ MIT — see [LICENSE](LICENSE) for details.
 
 ---
 
-Developed by Giscard
+Developed by [Giscard](https://github.com/shemaiscard)
