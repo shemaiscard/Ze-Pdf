@@ -461,6 +461,15 @@ spinStyle.textContent = `
 document.head.appendChild(spinStyle);
 
 // ──────────────────────────────────────────
+// ──────────────────────────────────────────
+// PDF TOOLS NAV BUTTON
+// ──────────────────────────────────────────
+document.getElementById('navPdfToolsBtn').addEventListener('click', () => {
+  const section = document.getElementById('pdfTools');
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ──────────────────────────────────────────
 // UTILS
 // ──────────────────────────────────────────
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
