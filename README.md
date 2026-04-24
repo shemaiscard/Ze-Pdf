@@ -1,77 +1,96 @@
-# ZePdf — Universal Document Converter
+# ZePdf
 
-> Convert any document instantly. PDF, Word, Excel, PowerPoint, Images, eBooks and more — powered by CloudConvert.
+Universal document converter built with vanilla JavaScript and the CloudConvert API.
 
-[![Netlify Status](https://img.shields.io/badge/deploy-netlify-00C7B7?logo=netlify)](https://netlify.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
-## ✨ Features
+## Overview
 
-### 📄 Document Conversion (CloudConvert)
-- **20+ formats supported:** PDF, DOCX, DOC, PPTX, XLSX, RTF, ODT, ODP, ODS, EPUB, MOBI, JPG, PNG, WEBP, GIF, TXT
-- **Batch conversion** — upload multiple files and convert them all at once
-- **Per-file format selector** — assign different target formats to each file
-- **Real-time progress bars** per file
-- **Auto-download** of converted files
-
-### ✂️ PDF Tools (100% Client-Side, No API Key)
-- **Merge PDFs** — combine multiple PDFs into one, drag to reorder
-- **Split PDF** — by every page, custom page range (e.g. `1-3, 5, 7-9`), or every N pages
-
-### 🖥️ UI & UX
-- **Drag & Drop** upload zone
-- **Dark / Light theme** toggle (teal/emerald accent)
-- **Conversion history** panel (up to 50 entries, stored in localStorage)
-- **Daily conversion counter**
-- **Toast notifications** for all events
-- **Fully responsive** — works on mobile
+ZePdf is a client-side web application that converts documents between 20+ formats and provides PDF split and merge tools — all without a backend server. Conversions are handled by the CloudConvert API. PDF split and merge run entirely in the browser using pdf-lib, requiring no API key.
 
 ---
 
-## 🚀 Getting Started
+## Features
 
-### 1. Get a free CloudConvert API key
-Visit [cloudconvert.com/api/v2](https://cloudconvert.com/api/v2) and create a free account.  
-The free tier gives you **25 minutes/day** of conversion time — enough for ~300 small file conversions.
+### Document Conversion
 
-### 2. Deploy to Netlify (Recommended)
-1. Fork or clone this repository.
-2. Drag the project folder to [app.netlify.com/drop](https://app.netlify.com/drop).
-3. Your site is live instantly!
+- Supported formats: PDF, DOCX, DOC, PPTX, XLSX, RTF, ODT, ODP, ODS, EPUB, MOBI, JPG, PNG, WEBP, GIF, TXT
+- Batch conversion — upload multiple files and convert them all at once
+- Per-file format selector — assign a different target format to each file
+- Real-time progress bar per file
+- Auto-download of converted output
+
+### PDF Tools
+
+- Merge — combine multiple PDFs into one, drag rows to reorder before merging
+- Split by every page — extract each page as a separate PDF file
+- Split by page range — extract specific pages using a range like `1-3, 5, 7-9`
+- Split every N pages — divide the PDF into equal-sized chunks
+
+### Interface
+
+- Drag and drop file upload
+- Dark and light theme toggle
+- Conversion history panel stored in localStorage, up to 50 entries
+- Daily conversion counter
+- Toast notifications for all events
+- Responsive layout for mobile and desktop
+
+---
+
+## Getting Started
+
+### 1. Get a CloudConvert API key
+
+Create a free account at [cloudconvert.com](https://cloudconvert.com/api/v2).  
+The free tier provides 25 conversion minutes per day, which covers approximately 300 small file conversions.
+
+### 2. Deploy to Netlify
+
+Drag the project folder to [app.netlify.com/drop](https://app.netlify.com/drop).  
+No build step is required. The site is live immediately.
 
 ### 3. Run locally
-Simply open `index.html` in any modern browser — no build step needed.
+
+Open `index.html` in any modern browser. No installation or build step needed.
 
 ---
 
-## 🔑 API Key Security
-Your CloudConvert API key is stored **only in your browser's localStorage**. It is never sent to any server other than CloudConvert directly. The key is not included in the repository.
+## API Key Security
+
+The CloudConvert API key is stored only in the browser's localStorage. It is never sent to any server other than CloudConvert directly and is not stored in the repository.
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
-Ze-Pdf-main/
-├── index.html       # Main app structure
-├── style.css        # Design system (dark/light theme, all components)
-├── app.js           # Conversion logic (CloudConvert API)
-├── pdf-tools.js     # PDF split/merge (pdf-lib, client-side)
-├── netlify.toml     # Netlify deploy config + security headers
+Ze-Pdf/
+├── index.html       Main application structure
+├── style.css        Design system, dark and light themes, all components
+├── app.js           Conversion logic using the CloudConvert API
+├── pdf-tools.js     PDF split and merge using pdf-lib, fully client-side
+├── netlify.toml     Netlify deployment config and security headers
 └── README.md
 ```
 
 ---
 
-## 🛠️ Tech Stack
-- **Vanilla HTML / CSS / JavaScript** — no framework, no build step
-- **[CloudConvert API v2](https://cloudconvert.com/api/v2)** — document conversion engine
-- **[pdf-lib](https://pdf-lib.js.org/)** — client-side PDF manipulation (split/merge)
-- **Netlify** — hosting + deployment
+## Tech Stack
+
+- HTML, CSS, JavaScript — no framework, no build step required
+- [CloudConvert API v2](https://cloudconvert.com/api/v2) — document conversion engine
+- [pdf-lib](https://pdf-lib.js.org/) — client-side PDF manipulation
+- [Netlify](https://netlify.com) — hosting and deployment
 
 ---
 
-## 📜 Credits
-Developed by **Giscard**
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
+
+---
+
+Developed by Giscard
