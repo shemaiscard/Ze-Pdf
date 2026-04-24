@@ -1,14 +1,21 @@
 /* ==========================================
    ZePdf — app.js
    CloudConvert API integration + full UI
+   API key is injected via Netlify env variable
+   CLOUDCONVERT_API_KEY (see _config.js / build)
    ========================================== */
+
+// ──────────────────────────────────────────
+// API KEY  — injected by Netlify at build time
+// The _config.js file sets window.ZEPDF_CONFIG
+// ──────────────────────────────────────────
+const API_KEY = (window.ZEPDF_CONFIG && window.ZEPDF_CONFIG.apiKey) || '';
 
 // ──────────────────────────────────────────
 // STATE
 // ──────────────────────────────────────────
 const state = {
-  apiKey: localStorage.getItem('zepdf_api_key') || '',
-  files: [],          // { id, file, targetFormat, status, downloadUrl }
+  files: [],
   history: JSON.parse(localStorage.getItem('zepdf_history') || '[]'),
   convertedToday: parseInt(localStorage.getItem('zepdf_today_count') || '0'),
   todayKey: localStorage.getItem('zepdf_today_key') || '',
@@ -33,14 +40,6 @@ const closeHistoryBtn= document.getElementById('closeHistoryBtn');
 const clearHistoryBtn= document.getElementById('clearHistoryBtn');
 const historyList   = document.getElementById('historyList');
 const historyCount  = document.getElementById('historyCount');
-const apiModal      = document.getElementById('apiModal');
-const apiSetupBtn   = document.getElementById('apiSetupBtn');
-const apiNotice     = document.getElementById('apiNotice');
-const saveApiKey    = document.getElementById('saveApiKey');
-const apiKeyInput   = document.getElementById('apiKeyInput');
-const modalClose    = document.getElementById('modalClose');
-const modalCancel   = document.getElementById('modalCancel');
-const toggleVisibility= document.getElementById('toggleVisibility');
 const statConverted = document.getElementById('statConverted');
 const toastContainer= document.getElementById('toastContainer');
 
@@ -57,54 +56,6 @@ themeToggle.addEventListener('click', () => {
   localStorage.setItem('zepdf_theme', next);
 });
 
-// ──────────────────────────────────────────
-// API KEY MANAGEMENT
-// ──────────────────────────────────────────
-function updateApiNotice() {
-  if (state.apiKey) {
-    apiNotice.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span>API key is set and ready.</span>
-      <button class="api-setup-btn" id="apiSetupBtn">Change Key</button>`;
-    apiNotice.classList.add('success');
-    document.getElementById('apiSetupBtn').addEventListener('click', openApiModal);
-  } else {
-    apiNotice.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <span>Enter your <a href="https://cloudconvert.com/api/v2" target="_blank">CloudConvert API key</a> to start converting.</span>
-      <button class="api-setup-btn" id="apiSetupBtn">Set API Key</button>`;
-    apiNotice.classList.remove('success');
-    document.getElementById('apiSetupBtn').addEventListener('click', openApiModal);
-  }
-}
-updateApiNotice();
-
-function openApiModal() {
-  apiKeyInput.value = state.apiKey;
-  apiModal.style.display = 'flex';
-}
-apiSetupBtn.addEventListener('click', openApiModal);
-modalClose.addEventListener('click', () => apiModal.style.display = 'none');
-modalCancel.addEventListener('click', () => apiModal.style.display = 'none');
-apiModal.addEventListener('click', (e) => { if (e.target === apiModal) apiModal.style.display = 'none'; });
-
-toggleVisibility.addEventListener('click', () => {
-  apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
-});
-
-saveApiKey.addEventListener('click', () => {
-  const key = apiKeyInput.value.trim();
-  if (!key) { showToast('Please enter an API key.', 'error'); return; }
-  state.apiKey = key;
-  localStorage.setItem('zepdf_api_key', key);
-  apiModal.style.display = 'none';
-  updateApiNotice();
-  showToast('API key saved!', 'success');
-});
 
 // ──────────────────────────────────────────
 // FILE ICON HELPER
@@ -243,7 +194,7 @@ function renderQueue() {
 function updateConvertBtn() {
   const hasFormat = !!globalFormat.value || state.files.some(f => f.targetFormat);
   const hasFiles = state.files.length > 0;
-  convertBtn.disabled = !(hasFiles && hasFormat && state.apiKey);
+  convertBtn.disabled = !(hasFiles && hasFormat);
 }
 
 globalFormat.addEventListener('change', updateConvertBtn);
@@ -258,7 +209,10 @@ clearAllBtn.addEventListener('click', () => {
 // CLOUDCONVERT CONVERSION
 // ──────────────────────────────────────────
 convertBtn.addEventListener('click', async () => {
-  if (!state.apiKey) { openApiModal(); return; }
+  if (!API_KEY) {
+    showToast('Conversion service not configured. Please contact the administrator.', 'error');
+    return;
+  }
 
   const filesToConvert = state.files.filter(f => f.status !== 'done');
   if (!filesToConvert.length) { showToast('All files already converted!', 'info'); return; }
@@ -281,7 +235,7 @@ convertBtn.addEventListener('click', async () => {
 
 async function convertFile(item, targetFormat) {
   setProgress(item.id, 5);
-  setItemStatus(item.id, 'active', '⏳ Uploading…');
+  setItemStatus(item.id, 'active', 'Uploading…');
 
   try {
     // Step 1 — Create Job
@@ -289,7 +243,7 @@ async function convertFile(item, targetFormat) {
     const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${state.apiKey}`,
+        'Authorization': `Bearer ${API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -317,7 +271,7 @@ async function convertFile(item, targetFormat) {
     const jobData = await jobRes.json();
     const uploadTask = jobData.data.tasks.find(t => t.name === 'upload-task');
     setProgress(item.id, 20);
-    setItemStatus(item.id, 'active', '⬆️ Uploading file…');
+    setItemStatus(item.id, 'active', 'Uploading file…');
 
     // Step 2 — Upload file
     const form = new FormData();
@@ -328,14 +282,14 @@ async function convertFile(item, targetFormat) {
     if (!uploadRes.ok) throw new Error('Upload failed');
 
     setProgress(item.id, 55);
-    setItemStatus(item.id, 'active', '⚙️ Converting…');
+    setItemStatus(item.id, 'active', 'Converting…');
 
     // Step 3 — Poll for completion
     const jobId = jobData.data.id;
     const exportUrl = await pollJob(jobId);
 
     setProgress(item.id, 90);
-    setItemStatus(item.id, 'active', '⬇️ Preparing download…');
+    setItemStatus(item.id, 'active', 'Preparing download…');
 
     // Step 4 — Fetch download URL and trigger download
     const fileRes = await fetch(exportUrl);
@@ -350,7 +304,7 @@ async function convertFile(item, targetFormat) {
     dlLink.classList.add('active');
 
     setProgress(item.id, 100);
-    setItemStatus(item.id, 'success', `✅ Done! (${targetFormat.toUpperCase()})`);
+    setItemStatus(item.id, 'success', `Done — ${targetFormat.toUpperCase()}`);
     item.status = 'done';
 
     // Save to history
@@ -362,7 +316,7 @@ async function convertFile(item, targetFormat) {
 
   } catch (err) {
     setProgress(item.id, 0);
-    setItemStatus(item.id, 'error', `❌ ${err.message}`);
+    setItemStatus(item.id, 'error', err.message);
     showToast(`Failed: ${err.message}`, 'error');
     console.error(err);
   }
@@ -374,7 +328,7 @@ async function pollJob(jobId) {
   for (let i = 0; i < maxAttempts; i++) {
     await sleep(2000);
     const res = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-      headers: { 'Authorization': `Bearer ${state.apiKey}` },
+      headers: { 'Authorization': `Bearer ${API_KEY}` },
     });
     const data = await res.json();
     const job = data.data;

@@ -9,7 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <!-- pdf-lib: client-side PDF split/merge (no API key needed) -->
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
+  <link rel="shortcut icon" href="/favicon/favicon.ico" />
+  <link rel="manifest" href="/favicon/site.webmanifest" />
+  <meta name="theme-color" content="#10b981" />
+  <!-- Runtime config: API key injected by Netlify build -->
+  <script src="/_config.js"></script>
+  <!-- pdf-lib: client-side PDF split/merge -->
   <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 </head>
 <body>
@@ -74,15 +82,6 @@
 
   <!-- MAIN CONVERTER -->
   <main class="main-container">
-    <!-- API KEY NOTICE -->
-    <div class="api-notice" id="apiNotice">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <span>Enter your <a href="https://cloudconvert.com/api/v2" target="_blank" rel="noopener">CloudConvert API key</a> to start converting.</span>
-      <button class="api-setup-btn" id="apiSetupBtn">Set API Key</button>
-    </div>
-
     <!-- UPLOAD ZONE -->
     <div class="upload-card" id="uploadCard">
       <div class="drop-zone" id="dropZone">
@@ -188,10 +187,7 @@
     <div class="pdf-tools-header">
       <div class="pdf-tools-title-area">
         <h2 class="section-title" style="text-align:left;margin-bottom:0.3rem">PDF Tools</h2>
-        <p class="pdf-tools-sub">Split and merge PDFs instantly — 100% in your browser, no upload needed.</p>
-      </div>
-      <div class="pdf-tools-badge">
-        <span class="badge-dot"></span> No API Key Required
+        <p class="pdf-tools-sub">Split and merge PDFs instantly — runs entirely in your browser.</p>
       </div>
     </div>
 
@@ -306,29 +302,20 @@
     <h2 class="section-title">Why ZePdf?</h2>
     <div class="features-grid">
       <div class="feature-card">
-        <div class="feature-icon">⚡</div>
-        <h3>Lightning Fast</h3>
-        <p>Conversions happen on CloudConvert's servers — no waiting for your machine to chug through heavy files.</p>
+        <h3>Fast Conversion</h3>
+        <p>Powered by CloudConvert — converts 20+ formats server-side so your device stays free.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🔒</div>
         <h3>Secure & Private</h3>
-        <p>Files are processed securely and automatically deleted from CloudConvert servers after conversion.</p>
+        <p>Files are automatically deleted from CloudConvert servers after conversion.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">📦</div>
         <h3>Batch Convert</h3>
-        <p>Upload multiple files at once and convert them all in one click — saving you hours of manual work.</p>
+        <p>Upload multiple files and convert them all at once, each to a different format.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon">🌍</div>
-        <h3>20+ Formats</h3>
-        <p>PDF, Word, Excel, PowerPoint, Images, eBooks — if it's a document, we can convert it.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">✂️</div>
         <h3>Split & Merge</h3>
-        <p>Merge multiple PDFs into one or split any PDF by page range — all locally in your browser.</p>
+        <p>Combine PDFs or extract specific pages — processed locally, nothing leaves your browser.</p>
       </div>
     </div>
   </section>
@@ -348,42 +335,11 @@
     </div>
   </aside>
 
-  <!-- API KEY MODAL -->
-  <div class="modal-overlay" id="apiModal" style="display:none">
-    <div class="modal">
-      <div class="modal-header">
-        <h3>Set CloudConvert API Key</h3>
-        <button class="modal-close" id="modalClose">✕</button>
-      </div>
-      <div class="modal-body">
-        <p>Your API key is stored only in your browser's local storage and is never sent to any server other than CloudConvert.</p>
-        <div class="input-group">
-          <label for="apiKeyInput">API Key</label>
-          <div class="input-with-toggle">
-            <input type="password" id="apiKeyInput" placeholder="eyJ0eXAiOiJKV1Qi..." autocomplete="off" />
-            <button class="toggle-visibility" id="toggleVisibility">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <a href="https://cloudconvert.com/api/v2" target="_blank" rel="noopener" class="get-key-link">
-          → Get a free API key from CloudConvert
-        </a>
-      </div>
-      <div class="modal-footer">
-        <button class="btn-secondary" id="modalCancel">Cancel</button>
-        <button class="btn-primary" id="saveApiKey">Save Key</button>
-      </div>
-    </div>
-  </div>
-
   <!-- TOAST CONTAINER -->
   <div class="toast-container" id="toastContainer"></div>
 
   <footer class="footer">
-    <p>ZePdf · Built with ❤️ · Powered by <a href="https://cloudconvert.com" target="_blank" rel="noopener">CloudConvert</a></p>
+    <p>ZePdf &mdash; made by <a href="https://github.com/shemaiscard" target="_blank" rel="noopener">Giscard</a></p>
   </footer>
 
   <script src="app.js"></script>
