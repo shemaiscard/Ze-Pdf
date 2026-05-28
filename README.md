@@ -1,63 +1,45 @@
 # ZePdf
 
+**Live Demo:** [zepdf.netlify.app](https://zepdf.netlify.app)
+
 Universal document converter and PDF toolkit. Convert between 20+ formats and split or merge PDFs — fast, clean, and browser-based.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
----
+## Privacy
 
-## What it does
-
-ZePdf lets you convert documents between popular formats and work with PDFs directly in your browser. No software to install, no account required.
-
-Document conversions are processed server-side for speed and reliability. PDF split and merge run entirely in the browser — nothing is uploaded, nothing leaves your device.
-
----
+PDF split and merge run **entirely in your browser** — nothing is uploaded, nothing leaves your device. Document conversions are processed server-side for performance.
 
 ## Features
 
 ### Document Conversion
-
 - Convert between 20+ formats: PDF, DOCX, DOC, PPTX, XLSX, RTF, ODT, ODP, ODS, EPUB, MOBI, JPG, PNG, WEBP, GIF, TXT
 - Batch convert — upload multiple files at once
-- Per-file format selector — assign different target formats to each file
-- Real-time progress bar per file with status updates
-- Auto-download of converted output
+- Per-file format selector
+- Real-time progress bar with auto-download
 
 ### PDF Tools
-
-- Merge — combine multiple PDFs into one; drag rows to reorder before merging
-- Split by every page — extract each page as a separate file
-- Split by page range — extract specific pages using a range like `1-3, 5, 7-9`
-- Split every N pages — divide a PDF into equal-sized chunks
+- **Merge** — combine multiple PDFs; drag to reorder before merging
+- **Split by page** — extract every page as a separate file
+- **Split by range** — e.g. `1-3, 5, 7-9`
+- **Split every N pages** — divide into equal chunks
 
 ### Interface
+- Dark/light theme toggle
+- Drag and drop upload
+- Conversion history (up to 50 entries)
+- Responsive — works on mobile and desktop
 
-- PDF Tools shortcut button in the navigation bar for quick access
-- Drag and drop file upload
-- Dark and light theme toggle
-- Conversion history panel with up to 50 entries
-- Daily conversion counter
-- Toast notifications for all events
-- Responsive layout for mobile and desktop
+## Deploy on Netlify
 
----
-
-## Deployment
-
-### Deploy to Netlify from GitHub
-
-1. Fork or clone this repository.
-2. Go to [app.netlify.com](https://app.netlify.com), create a new site from GitHub, and select this repository.
-3. In your Netlify site settings, go to **Environment variables** and add:
-
+1. Fork this repo and connect to [Netlify](https://app.netlify.com).
+2. Add environment variable:
    ```
    CLOUDCONVERT_API_KEY = your_api_key
    ```
+3. The `netlify.toml` build command injects the key at build time — users never see it.
 
-4. Trigger a deploy. The build command in `netlify.toml` injects the key into `_config.js` at build time. Users never see or interact with the key.
-
----
+> **Security:** The API key is never exposed to end users. It is injected server-side at build time only.
 
 ## Project Structure
 
@@ -66,27 +48,16 @@ Ze-Pdf/
 ├── index.html       Main application
 ├── style.css        Design system and themes
 ├── app.js           Conversion logic and UI
-├── pdf-tools.js     PDF split and merge (runs locally in browser)
-├── _config.js       Generated at build by Netlify — do not edit
-├── netlify.toml     Build command and security headers
-├── favicon/         App icons and web manifest
-└── README.md
+├── pdf-tools.js     Client-side PDF split/merge
+├── _config.js       Generated at build — do not edit or commit
+├── netlify.toml     Build config and security headers
+└── favicon/
 ```
 
----
-
 ## Tech Stack
-
-- HTML, CSS, JavaScript — no framework, no build step
+- HTML, CSS, JavaScript (no framework)
 - [pdf-lib](https://pdf-lib.js.org/) — client-side PDF manipulation
-- [Netlify](https://netlify.com) — hosting, build, environment variables
-
----
+- [Netlify](https://netlify.com) — hosting, build, secrets injection
 
 ## License
-
-MIT — see [LICENSE](LICENSE) for details.
-
----
-
-Developed by [Giscard](https://github.com/shemaiscard)
+MIT — Developed by [Giscard](https://github.com/shemaiscard)
