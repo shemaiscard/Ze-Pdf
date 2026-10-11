@@ -1,5 +1,7 @@
 [build]
   publish = "."
+  # Overrides the build command saved in the Netlify UI, which wrote _config.js.
+  command = "echo 'Static site, no build step'"
 
 [[headers]]
   for = "/*"
