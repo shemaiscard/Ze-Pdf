@@ -1,6 +1,5 @@
 [build]
   publish = "."
-  command = "echo \"window.ZEPDF_CONFIG={apiKey:'$CLOUDCONVERT_API_KEY'};\" > _config.js"
 
 [[headers]]
   for = "/*"
@@ -8,4 +7,4 @@
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://api.cloudconvert.com; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; connect-src 'self' https://api.cloudconvert.com https://*.cloudconvert.com"
+    Content-Security-Policy = "default-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; connect-src 'self' https://*.cloudconvert.com"
