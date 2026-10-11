@@ -13,6 +13,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png" />
   <link rel="shortcut icon" href="/favicon/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
   <link rel="manifest" href="/favicon/site.webmanifest" />
   <meta name="theme-color" content="#10b981" />
   <!-- pdf-lib: client-side PDF split/merge -->
@@ -347,5 +348,14 @@
 
   <script src="app.js"></script>
   <script src="pdf-tools.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.log('Service Worker registration failed', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>
