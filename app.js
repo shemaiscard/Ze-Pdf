@@ -1,15 +1,10 @@
 /* ==========================================
-   ZePdf — app.js
+   ZePdf: app.js
    CloudConvert API integration + full UI
-   API key is injected via Netlify env variable
-   CLOUDCONVERT_API_KEY (see _config.js / build)
+   Jobs are created and polled through the
+   Netlify Functions in netlify/functions,
+   which hold the CloudConvert key.
    ========================================== */
-
-// ──────────────────────────────────────────
-// API KEY  — injected by Netlify at build time
-// The _config.js file sets window.ZEPDF_CONFIG
-// ──────────────────────────────────────────
-const API_KEY = (window.ZEPDF_CONFIG && window.ZEPDF_CONFIG.apiKey) || '';
 
 // ──────────────────────────────────────────
 // STATE
@@ -209,11 +204,6 @@ clearAllBtn.addEventListener('click', () => {
 // CLOUDCONVERT CONVERSION
 // ──────────────────────────────────────────
 convertBtn.addEventListener('click', async () => {
-  if (!API_KEY) {
-    showToast('Conversion service not configured. Please contact the administrator.', 'error');
-    return;
-  }
-
   const filesToConvert = state.files.filter(f => f.status !== 'done');
   if (!filesToConvert.length) { showToast('All files already converted!', 'info'); return; }
 
@@ -238,55 +228,36 @@ async function convertFile(item, targetFormat) {
   setItemStatus(item.id, 'active', 'Uploading…');
 
   try {
-    // Step 1 — Create Job
+    // Step 1: create the job (the server adds the key)
     const inputFmt = item.file.name.split('.').pop().toLowerCase();
-    const jobRes = await fetch('https://api.cloudconvert.com/v2/jobs', {
+    const jobRes = await fetch('/api/convert', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        tasks: {
-          'upload-task': { operation: 'import/upload' },
-          'convert-task': {
-            operation: 'convert',
-            input: 'upload-task',
-            input_format: inputFmt,
-            output_format: targetFormat,
-          },
-          'export-task': {
-            operation: 'export/url',
-            input: 'convert-task',
-          },
-        },
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ inputFormat: inputFmt, outputFormat: targetFormat }),
     });
 
     if (!jobRes.ok) {
-      const err = await jobRes.json();
+      const err = await jobRes.json().catch(() => ({}));
       throw new Error(err.message || `HTTP ${jobRes.status}`);
     }
 
-    const jobData = await jobRes.json();
-    const uploadTask = jobData.data.tasks.find(t => t.name === 'upload-task');
+    const job = await jobRes.json();
     setProgress(item.id, 20);
     setItemStatus(item.id, 'active', 'Uploading file…');
 
-    // Step 2 — Upload file
+    // Step 2: upload the file straight to CloudConvert's signed form
     const form = new FormData();
-    Object.entries(uploadTask.result.form.parameters).forEach(([k, v]) => form.append(k, v));
+    Object.entries(job.upload.parameters).forEach(([k, v]) => form.append(k, v));
     form.append('file', item.file);
 
-    const uploadRes = await fetch(uploadTask.result.form.url, { method: 'POST', body: form });
+    const uploadRes = await fetch(job.upload.url, { method: 'POST', body: form });
     if (!uploadRes.ok) throw new Error('Upload failed');
 
     setProgress(item.id, 55);
     setItemStatus(item.id, 'active', 'Converting…');
 
-    // Step 3 — Poll for completion
-    const jobId = jobData.data.id;
-    const exportUrl = await pollJob(jobId);
+    // Step 3: poll for completion
+    const exportUrl = await pollJob(job.id);
 
     setProgress(item.id, 90);
     setItemStatus(item.id, 'active', 'Preparing download…');
@@ -327,20 +298,12 @@ async function pollJob(jobId) {
   const maxAttempts = 60;
   for (let i = 0; i < maxAttempts; i++) {
     await sleep(2000);
-    const res = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
-      headers: { 'Authorization': `Bearer ${API_KEY}` },
-    });
-    const data = await res.json();
-    const job = data.data;
+    const res = await fetch(`/api/convert-status?id=${encodeURIComponent(jobId)}`);
+    const job = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(job.message || `HTTP ${res.status}`);
 
-    if (job.status === 'finished') {
-      const exportTask = job.tasks.find(t => t.name === 'export-task');
-      return exportTask.result.files[0].url;
-    }
-    if (job.status === 'error') {
-      const errTask = job.tasks.find(t => t.status === 'error');
-      throw new Error(errTask?.message || 'Conversion error on server.');
-    }
+    if (job.status === 'finished') return job.url;
+    if (job.status === 'error') throw new Error(job.message || 'Conversion error on server.');
   }
   throw new Error('Conversion timed out.');
 }
